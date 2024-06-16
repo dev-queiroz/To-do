@@ -1,20 +1,15 @@
 <?php
 
-// Conexão com o banco de dados SQLite
 $db = new PDO('sqlite:banco_de_dados.sqlite');
 
-// Verifica se há um usuário logado (sessão iniciada)
 session_start();
 
 if (!isset($_SESSION['usuario'])) {
-  // Usuário não logado, redireciona para o index.php
   header('Location: index.php');
   exit;
 }
 
 $usuarioLogado = $_SESSION['usuario'];
-
-// Funções para gerenciar tarefas
 
 function getTarefasDoUsuario($idUsuario) {
   global $db;
@@ -56,25 +51,22 @@ function removerTarefa($idTarefa) {
   $stmt->execute();
 }
 
-// Roteamento de ações (opcional)
-
 if (isset($_GET['acao'])) {
   switch ($_GET['acao']) {
     case 'concluir':
       $idTarefa = $_GET['id_tarefa'];
       marcarTarefaConcluida($idTarefa);
-      header('Location: tarefas.php'); // Redireciona após concluir tarefa
+      header('Location: tarefas.php');
       break;
 
     case 'remover':
       $idTarefa = $_GET['id_tarefa'];
       removerTarefa($idTarefa);
-      header('Location: tarefas.php'); // Redireciona após remover tarefa
+      header('Location: tarefas.php');
       break;
   }
 }
 
-// Busca e exibe as tarefas do usuário logado
 $tarefas = getTarefasDoUsuario($usuarioLogado['id_usuario']);
 
 ?>
@@ -117,20 +109,18 @@ $tarefas = getTarefasDoUsuario($usuarioLogado['id_usuario']);
 
   <?php
 
-  // Função para formatar data e hora
   function formatarDataHora($dataHora) {
     $dataHora = new DateTime($dataHora);
     return $dataHora->format('d/m/Y H:i');
   }
 
-  // Processamento do formulário para adicionar nova tarefa (opcional)
   if (isset($_POST['titulo'])) {
     $titulo = $_POST['titulo'];
     $descricao = $_POST['descricao'];
 
     if (!empty($titulo)) {
       cadastrarTarefa($usuarioLogado['id_usuario'], $titulo, $descricao);
-      header('Location: tarefas.php'); // Redireciona após adicionar tarefa
+      header('Location: tarefas.php');
     }
   }
 

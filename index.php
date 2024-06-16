@@ -1,18 +1,14 @@
 <?php
 
-// Conexão com o banco de dados SQLite
 $db = new PDO('sqlite:banco_de_dados.sqlite');
 
-// Função para cadastrar um novo usuário
 function cadastrarUsuario($nome, $email, $senha) {
   global $db;
 
-  // Validação básica dos dados (você deve aprimorar essa validação)
   if (empty($nome) || empty($email) || empty($senha)) {
     return false;
   }
 
-  // Verifica se o email já existe na tabela 'usuarios'
   $sql = "SELECT * FROM usuarios WHERE email = :email";
   $stmt = $db->prepare($sql);
   $stmt->bindParam(':email', $email);
@@ -20,13 +16,11 @@ function cadastrarUsuario($nome, $email, $senha) {
   $usuarioExistente = $stmt->fetch();
 
   if ($usuarioExistente) {
-    return false; // Email já cadastrado
+    return false;
   }
 
-  // Criptografa a senha antes de armazenar
   $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
 
-  // Insere o novo usuário na tabela 'usuarios'
   $sql = "INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)";
   $stmt = $db->prepare($sql);
   $stmt->bindParam(':nome', $nome);
@@ -34,14 +28,12 @@ function cadastrarUsuario($nome, $email, $senha) {
   $stmt->bindParam(':senha', $senhaHash);
   $stmt->execute();
 
-  return true; // Cadastro realizado com sucesso
+  return true;
 }
 
-// Função para autenticar um usuário
 function autenticarUsuario($email, $senha) {
   global $db;
 
-  // Consulta o usuário na tabela 'usuarios' pelo email
   $sql = "SELECT * FROM usuarios WHERE email = :email";
   $stmt = $db->prepare($sql);
   $stmt->bindParam(':email', $email);
@@ -49,24 +41,19 @@ function autenticarUsuario($email, $senha) {
   $usuario = $stmt->fetch();
 
   if (!$usuario) {
-    return false; // Usuário não encontrado
+    return false;
   }
 
-  // Verifica se a senha informada corresponde à senha armazenada
   if (!password_verify($senha, $usuario['senha'])) {
-    return false; // Senha incorreta
+    return false;
   }
 
-  // Usuário autenticado com sucesso
-  return $usuario; // Retorna os dados do usuário autenticado
+  return $usuario;
 }
-
-// Roteamento de ações
 
 if (isset($_POST['acao'])) {
   switch ($_POST['acao']) {
     case 'cadastrar':
-      // Tenta cadastrar um novo usuário
       $nome = $_POST['nome'];
       $email = $_POST['email'];
       $senha = $_POST['senha'];
@@ -79,17 +66,15 @@ if (isset($_POST['acao'])) {
       break;
 
     case 'login':
-      // Tenta autenticar um usuário
       $email = $_POST['email'];
       $senha = $_POST['senha'];
 
       $usuarioAutenticado = autenticarUsuario($email, $senha);
 
       if ($usuarioAutenticado) {
-        // Usuário autenticado com sucesso: inicia sessão e redireciona
         session_start();
         $_SESSION['usuario'] = $usuarioAutenticado;
-        header('Location: tarefas.php'); // Redireciona para tarefas.php
+        header('Location: tarefas.php');
       } else {
         echo "<p>Credenciais inválidas. Tente novamente.</p>";
       }
