@@ -75,7 +75,7 @@ $tarefas = getTarefasDoUsuario($usuarioLogado['id_usuario']);
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/style.css">
   <title>To-Do List - Tarefas</title>
 </head>
 <body>
